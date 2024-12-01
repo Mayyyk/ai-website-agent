@@ -15,3 +15,5 @@ A Python-based application that uses OpenAI's GPT-4 to intelligently modify JSON
 
 Currently the system only works with the `solution-section.json` file. It should be able to work with any JSON file. 
 Also, it'll overwrite the original file with the modified one and it'll be dynamically linked to the frontend.
+
+And of course all of the other features like image input/output, etc...
