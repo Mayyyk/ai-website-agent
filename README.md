@@ -20,3 +20,20 @@ Currently the system only works with the `solution-section.json` file. It should
 Also, it'll overwrite the original file with the modified one and it'll be dynamically linked to the frontend.
 
 And of course all of the other features like image input/output, etc...
+
+## How to run:
+
+install requirements:
+```
+pip install -r requirements.txt
+```
+
+create `.env` file in the `backend` folder and add your OpenAI API key:
+```
+OPENAI_API_KEY=<your_openai_api_key>
+```
+
+run the script:
+```
+python backend/main.py
+```
