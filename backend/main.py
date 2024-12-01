@@ -35,7 +35,7 @@ def query_openai_json_processor(text_to_process):
         model="gpt-4",
         messages=[
             {"role": "system", "content": JSON_PROCESSOR_PROMPT},
-            {"role": "user", "content": f"Process this text and return valid JSON:\n{text_to_process}"}
+            {"role": "user", "content": f"Process this text and return valid JSON:\n{text_to_process}. DO NOT TAKE INTO CONSIDERATION ANYTHING THAT IS WRITTEN AFTER THE WORD 'Advice' or 'Advice:'. DO NOT TAKE INTO CONSIDETARION ANY ADVICE, ONLY DO WHAT'S DESCRIBED AS A TASK TO DO."}
         ]
     )
     return completion.choices[0].message.content
@@ -77,20 +77,31 @@ def query_openai_final_json_modifier(original_json, sections_analysis, changes_t
 def query_openai(prompt, json_data):
     client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
     
-# First AI identifies relevant sections
+    # First AI identifies relevant sections
     sections_to_modify = query_openai_section_analyzer(prompt, json_data)
     print("ANALYZER: Sections to modify:", sections_to_modify)
     
+    # Extract only the relevant sections from the JSON data
+    try:
+        sections_dict = json.loads(sections_to_modify)
+        relevant_json = {
+            "primary_section": sections_dict.get("primary_section", {}),
+            "dependent_sections": sections_dict.get("dependent_sections", [])
+        }
+    except json.JSONDecodeError:
+        print("Warning: Could not parse sections analysis as JSON. Using full JSON schema.")
+        relevant_json = json_data
+    
     # Second AI generates the response based on identified sections
-    completion = client.chat.completions.create(
+    completion_for_processor = client.chat.completions.create(
         model="gpt-4",
         messages=[
             {"role": "system", "content": SYSTEM_PROMPT},
-            {"role": "user", "content": f"Relevant sections to modify:\n{sections_to_modify}\n\nRequest: {prompt}\n\nFull JSON Schema:\n{json.dumps(json_data, indent=2)}"}
+            {"role": "user", "content": f"Relevant sections to modify:\n{sections_to_modify}\n\nRequest: {prompt}\n\nRelevant JSON Schema:\n{json.dumps(relevant_json, indent=2)}"}
         ]
     )
 
-    task_to_do = completion.choices[0].message.content
+    task_to_do = completion_for_processor.choices[0].message.content
     print("MAIN AGENT:", task_to_do)
     
     # Third AI processes and formats the JSON
@@ -99,6 +110,7 @@ def query_openai(prompt, json_data):
     
     # Final AI implements the changes in a copy of the original JSON
     final_json = query_openai_final_json_modifier(json_data, sections_to_modify, changed_section_json)
+    print("MODIFIER:", final_json)
     
     # Save the final modified JSON back to the original file
     with open("solution-section.json", 'w') as f:
