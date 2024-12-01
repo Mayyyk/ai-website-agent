@@ -10,11 +10,11 @@
       "container": {
         "classes": "container mx-auto px-6 h-16 flex items-center justify-between",
         "logo": {
-          "text": "Welcome to My Website",
+          "text": "Brainpower AI>>",
           "typography": {
-            "preset": "subtitle",
+            "preset": "logo",
             "tag": "div",
-            "classes": "text-[28px] font-bold text-white leading-none"
+            "classes": "text-[48px] font-bold text-white leading-none"
           }
         },
         "nav": {
@@ -51,4 +51,4 @@
       }
     }
   }
-}
+} 
