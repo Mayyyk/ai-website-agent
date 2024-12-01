@@ -11,7 +11,3 @@ A Python-based application that uses OpenAI's GPT-4 to intelligently modify JSON
   - JSON Processor: Formats and validates JSON modifications
   - JSON Modifier: Implements changes while preserving the original structure
 
-## Setup
-
-1. Clone the repository
-2. Install dependencies:
